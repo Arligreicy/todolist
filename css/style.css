@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #f0f0f0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  margin: 20px;
+  color: #002b5c;
+}
+
+#container3d {
+  width: 100%;
+  height: 80vh;
+  display: block;
+  margin: 0 auto;
+}
