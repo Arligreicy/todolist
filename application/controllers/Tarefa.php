@@ -35,7 +35,11 @@ class Tarefa extends CI_Controller {
 		$sort = isset($_POST['sort']) ? $_POST['sort'] : "";
 
 		$total = count($t->listar($filter));
-		$lastPage = ceil(count($t->listar($filter)) / $size);
+
+		if ($size <= 0) {
+			$size = 1;
+		}
+		$lastPage = ceil($total / $size);
 		$resultado = $t->listar_ajax($page, $size, $offset, $filter, $sort);
 
 		echo json_encode(["last_page"=> $lastPage, "data" => $resultado, "total" => $total]);

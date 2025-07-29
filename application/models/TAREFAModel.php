@@ -33,9 +33,11 @@ class TAREFAModel extends CI_Model {
         }
     }// Fim da função inserir
     function listar($filter = "") {
+
         $this->db->select("TAREFA.*, 
                         USUARIO.NOME AS NOMEUSUARIO, 
-                        CATEGORIA.DESCRICAO AS NOMECATEGORIA");
+                        CATEGORIA.NOME AS NOMECATEGORIA,
+						TAREFA.DESCRICAO AS DESCRICAO");
         $this->db->from('TAREFA');
         $this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
         $this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
@@ -56,52 +58,56 @@ class TAREFAModel extends CI_Model {
 
         $query = $this->db->get();
         return $query->result();
+
     }// Fim da função listar
 
 	function listar_ajax($page, $size, $offset, $filter = "", $sort = []) {
-	$this->db->select("TAREFA.*, 
-	                   USUARIO.NOME AS NOMEUSUARIO, 
-	                   CATEGORIA.DESCRICAO AS NOMECATEGORIA");
-	$this->db->from('TAREFA');
-	$this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
-	$this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
 
-	// Filtros dinâmicos
-	if (!empty($filter)) {
-		foreach ($filter as $f) {
-			$campo = $f['field'];
-			$operador = $f['type'];
-			$valor = $f['value'];
+		$this->db->select("TAREFA.*, 
+						USUARIO.NOME AS NOMEUSUARIO, 
+						CATEGORIA.NOME AS NOMECATEGORIA,
+						TAREFA.DESCRICAO AS DESCRICAO");
+		$this->db->from('TAREFA');
+		$this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
+		$this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
 
-			if ($campo === 'compare') {
-				$this->db->where($valor, null, false);
-			} else {
-				$this->db->where("$campo $operador", $valor);
+		// Filtros dinâmicos
+		if (!empty($filter)) {
+			foreach ($filter as $f) {
+				$campo = $f['field'];
+				$operador = $f['type'];
+				$valor = $f['value'];
+
+				if ($campo === 'compare') {
+					$this->db->where($valor, null, false);
+				} else {
+					$this->db->where("$campo $operador", $valor);
+				}
 			}
 		}
-	}
 
-	// Ordenação
-	if (!empty($sort) && isset($sort[0]['field'], $sort[0]['dir'])) {
-		$campo_sort = $sort[0]['field'];
-		$direcao = $sort[0]['dir'];
+		// Ordenação
+		if (!empty($sort) && isset($sort[0]['field'], $sort[0]['dir'])) {
+			$campo_sort = $sort[0]['field'];
+			$direcao = $sort[0]['dir'];
 
-		// Evita erro de tipos em campos como DESCRICAO (MS SQL Server)
-		if ($campo_sort === 'DESCRICAO') {
-			$campo_sort = "CONVERT(VARCHAR(MAX), TAREFA.DESCRICAO)";
+			// Evita erro de tipos em campos como DESCRICAO (MS SQL Server)
+			if ($campo_sort === 'DESCRICAO') {
+				$campo_sort = "CONVERT(VARCHAR(MAX), TAREFA.DESCRICAO)";
+			}
+
+			$this->db->order_by($campo_sort, $direcao);
+		} else {
+			$this->db->order_by("TAREFA.IDTAREFA", "desc");
 		}
 
-		$this->db->order_by($campo_sort, $direcao);
-	} else {
-		$this->db->order_by("TAREFA.IDTAREFA", "desc");
-	}
+		// Paginação
+		$this->db->limit($size, $offset);
 
-	// Paginação
-	$this->db->limit($size, $offset);
-
-	$query = $this->db->get();
-	return $query->result();
-}//Fim da função listar_ajax
+		$query = $this->db->get();
+		return $query->result();
+		
+	}//Fim da função listar_ajax
 
     
     function atualizar(){
