@@ -32,6 +32,7 @@ class TAREFAModel extends CI_Model {
             return false;
         }
     }// Fim da função inserir
+
     function listar($filter = "") {
 
         $this->db->select("TAREFA.*, 
@@ -73,6 +74,7 @@ class TAREFAModel extends CI_Model {
 
 		// Filtros dinâmicos
 		if (!empty($filter)) {
+
 			foreach ($filter as $f) {
 				$campo = $f['field'];
 				$operador = $f['type'];
@@ -85,7 +87,6 @@ class TAREFAModel extends CI_Model {
 				}
 			}
 		}
-
 		// Ordenação
 		if (!empty($sort) && isset($sort[0]['field'], $sort[0]['dir'])) {
 			$campo_sort = $sort[0]['field'];
@@ -94,6 +95,7 @@ class TAREFAModel extends CI_Model {
 			// Evita erro de tipos em campos como DESCRICAO (MS SQL Server)
 			if ($campo_sort === 'DESCRICAO') {
 				$campo_sort = "CONVERT(VARCHAR(MAX), TAREFA.DESCRICAO)";
+				$this->db->order_by($campo_sort, $direcao, false); // não escapa
 			}
 
 			$this->db->order_by($campo_sort, $direcao);

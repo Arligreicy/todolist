@@ -235,27 +235,20 @@
             layout: "fitColumns",
             height: "calc(100vh - 290px)",
             ajaxURL: "<?php echo base_url('Tarefa/listar_ajax'); ?>",
-            ajaxConfig: {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-                }
-            },
-            ajaxContentType: "form",
+            ajaxConfig: "POST",
             progressiveLoad: "scroll",
             progressiveLoadScrollMargin: 200,
             paginationSize: 20,
             placeholder: "Nenhum registro encontrado",
             sortMode: "remote",
             filterMode: "remote",
-
             initialFilter: [{
-                field: "TAREFA.DATACRIACAO",
+                field: "CONVERT(TAREFA.DATACRIACAO,DATE)",
                 type: ">=",
                 value: "<?php echo date('Y-m-d', strtotime('-30 days')); ?>"
                 },
                 {
-                    field: "TAREFA.DATACONCLUSAO",
+                    field: "CONVERT(TAREFA.DATACRIACAO,DATE)",
                     type: "<=",
                     value: "<?php echo date('Y-m-d'); ?>"
                 },
@@ -264,11 +257,6 @@
             columnDefaults: {
                 vertAlign: "middle",
             },
-            movableColumns: true,
-            initialSort: [{
-                column: 'IDTAREFA',
-                dir: "desc"
-            }],
             columns: [
                 // Coluna de ações (botões Editar e Excluir)
                 {
@@ -290,7 +278,7 @@
                 {
                     title: "Nome",
                     field: "NOMEUSUARIO",
-                    width: 100
+                    width: 120
                 },
                 {
                     title: "Tipo",
@@ -314,13 +302,40 @@
                     hozAlign: "center",
                     formatter: function(cell, formatterParams) {
                         const value = cell.getValue();
-                        if (value === "Baixa") {
-                            return '<span class="badge bg-green">Baixa</span>';
-                        } else if (value === "Média") {
-                            return '<span class="badge bg-warning">Média</span>';
-                        } else {
+                        if (value === "baixa") {
+                            return '<span class="badge bg-success">Baixa</span>';
+                        } else if (value === "alta") {
                             return '<span class="badge bg-danger">Alta</span>';
+                        } else {
+                            return '<span class="badge bg-warning">Média</span>';
                         }
+                    }
+                },
+                {
+                    title: "Justificativa",
+                    field: "JUSTIFICATIVA",
+                    width: 150,
+                },
+                 {
+                    title: "Data de Criação",
+                    field: "DATACRIACAO",
+                    width: 150,
+                    hozAlign: "center",
+                    headerHozAlign: "center",
+
+                    formatter: function(cell) {
+                        let data = cell.getValue();
+                        if (!data) return "";
+                        let d = new Date(data);
+                        if (isNaN(d.getTime())) return data;
+
+                        let dia = String(d.getDate()).padStart(2, '0');
+                        let mes = String(d.getMonth() + 1).padStart(2, '0');
+                        let ano = d.getFullYear();
+                        let hora = String(d.getHours()).padStart(2, '0');
+                        let minuto = String(d.getMinutes()).padStart(2, '0');
+
+                        return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
                     }
                 },
                {
@@ -348,7 +363,7 @@
                 {
                     title: "Situação",
                     field: "STATUS",
-                    width: 150,
+                    width: 200,
                     hozAlign: "center",
                     headerHozAlign: "center",
                     formatter: function(cell) {
@@ -365,7 +380,7 @@
                 },
             ],
         });
-
+        
     </script>
 
 </body>
