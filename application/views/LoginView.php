@@ -205,7 +205,7 @@
 								showConfirmButton: false,
 								timer: 1500
 							}).then(() => {
-								window.location = "<?= base_url("Tarefa/listar"); ?>";
+								window.location = "<?= base_url("Tarefa/listar")?>";
 							});
 						} else {
 							Swal.fire({

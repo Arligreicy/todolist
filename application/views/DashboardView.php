@@ -132,8 +132,8 @@
 
                                 <!-- Campo Descrição -->
                                 <div class="col-md">
-                                    <input type="text" class="form-control placeholder-blue" id="filtro_descricao"
-                                        name="filtro_descricao" placeholder="Pesquisar por descrição">
+                                    <input type="text" class="form-control placeholder-blue" id="filtrodescricao"
+                                        name="filtrodescricao" placeholder="Pesquisar por descrição">
                                 </div>
 
                                 <!-- Campo Situação -->
@@ -231,7 +231,7 @@
 
     <script>
 
-        var tarefas = new Tabulator("#tarefas-tab", {
+        var tarefas = new Tabulator("#tarefas-tab", {            
             layout: "fitColumns",
             height: "calc(100vh - 290px)",
             ajaxURL: "<?php echo base_url('Tarefa/listar_ajax'); ?>",
@@ -251,6 +251,11 @@
                     field: "CONVERT(TAREFA.DATACRIACAO,DATE)",
                     type: "<=",
                     value: "<?php echo date('Y-m-d'); ?>"
+                },
+                 {
+                    field: "TAREFA.IDUSUARIO",
+                    type: "=",
+                    value: "<?php echo $_SESSION['idusuario']; ?>"
                 },
             ],
             dataLoaderLoading: '<i class="fa fa-circle-o-notch fa-spin text-secondary fa-3x fa-fw"></i>',
@@ -370,9 +375,9 @@
                         const status = cell.getValue();
                         var id = cell.getRow().getData().IDTAREFA;
                         if (status === 'pendente') {
-                            return `<button class="btn btn-sm btn-success btnAtualizarStatus" data-id="${id}">Em aberto</button>`;
+                            return `<button class="btn btn-sm btn-success btnAtualizarStatus" data-id="${id}">Pendente</button>`;
                         } else if (status === 'concluida') {
-                            return `<button class="btn btn-sm btn-primary btnAtualizarStatus" data-id="${id}">Encerrada</button>`;
+                            return `<button class="btn btn-sm btn-primary btnAtualizarStatus" data-id="${id}">Concluído</button>`;
                         } else {
                             return '<button class="btn btn-sm btn-danger">Cancelada</button>';
                         }
@@ -380,8 +385,60 @@
                 },
             ],
         });
+
+        $(function() {
+
+            $('#formFiltro').on('submit', function() {
+
+                var datainicio = $('#formFiltro input[name="datainicio"]').val();
+                var datafinal = $('#formFiltro input[name="datafinal"]').val();
+                var situacao = $('#formFiltro select[name="situacao"]').val();
+                var descricao = $('#formFiltro input[name="filtrodescricao"]').val();
+
+                var filtros = [];
+
+                // Se tiver datas, usa as datas do form
+                if (datainicio) {
+                    filtros.push({
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: ">=",
+                        value: datainicio
+                    });
+                }
+
+                if (datafinal) {
+                    filtros.push({
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: "<=",
+                        value: datafinal
+                    });
+                }
+
+                // Só aplica o filtro de status se foi preenchido
+                if (situacao !== "") {
+                    filtros.push({
+                        field: 'TAREFA.STATUS',
+                        type: "=",
+                        value: situacao
+                    });
+                }
+
+                if (descricao != '') {
+                    filtros.push({
+                        field: 'TAREFA.DESCRICAO',
+                        type: "like",
+                        value: `%${descricao}%`
+                    });
+                }
+
+                tarefas.setFilter(filtros);
+
+            });
+        });
+
         
     </script>
+
 
 </body>
 </html>

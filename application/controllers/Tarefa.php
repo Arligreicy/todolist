@@ -21,10 +21,12 @@ class Tarefa extends CI_Controller {
 	} // Fim da função listar
 
 	function listar_ajax() {
+
 		header('Content-Type: application/json');
 
 		$this->load->model("TAREFAModel");
 		$t = $this->TAREFAModel;
+
 
 		// inputs do post que o Tabulator realiza
 		$page = $this->input->post('page');
@@ -33,7 +35,7 @@ class Tarefa extends CI_Controller {
 		$offset = ($page - 1) * $size;
 		$filter = isset($_POST['filter']) ? $_POST['filter'] : "";
 		$sort = isset($_POST['sort']) ? $_POST['sort'] : "";
-
+		
 		$total = count($t->listar($filter));
 
 		$lastPage = ceil($total / $size);

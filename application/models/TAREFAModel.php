@@ -43,6 +43,7 @@ class TAREFAModel extends CI_Model {
         $this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
         $this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
 
+
         if (!empty($filter)) {
             foreach ($filter as $f) {
                 $campo = $f['field'];

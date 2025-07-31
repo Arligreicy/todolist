@@ -74,6 +74,7 @@ class Usuario extends CI_Controller {
 
             $nome = $this->input->post('nome');
             $senha = $this->input->post('senha');
+            
 
             if (empty($nome) || empty($senha)) {
                 echo json_encode(['status' => 'erro', 'mensagem' => 'Nome e senha são obrigatórios.']);
@@ -84,6 +85,7 @@ class Usuario extends CI_Controller {
             $u = $this->USUARIOModel;
             $u->NOME = $nome;
             $u->SENHA = password_hash($senha, PASSWORD_DEFAULT);
+            $u->DATACAD = date('Y-m-d H:i:s');
 
             if ($u->inserir()) {
                 echo json_encode(['status' => 'ok']);
