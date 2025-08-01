@@ -46,10 +46,44 @@ class Tarefa extends CI_Controller {
 		echo json_encode(["last_page"=> $lastPage, "data" => $resultado, "total" => $total]);
 	}
 
-        
-    }
+	function alterar_status(){
+		
+		header('Content-Type: application/json');
 
-?>
+		$this->load->model("TAREFAModel");
+		$t = $this->TAREFAModel;
+		$t->IDTAREFA = $this->input->post("idtarefa");
+		$t->carregar();
+
+		if($t->STATUS == 'pendente'){
+			$t->STATUS = 'concluida';
+		}
+		else if($t->STATUS == 'concluida'){
+			$t->STATUS = 'pendente';
+		}
+
+		if($t->atualizar()){
+			echo json_encode(['sucesso' => true]);
+		}
+		else{
+			echo json_encode(['sucesso' => false,'mensagem' => 'Erro ao atualizar o status da tarefa.','debug' => $this->db->last_query() ]);
+		}
+
+	}//Fim da função alterar_status
+
+	function carregartarefa() {
+
+		$id = $this->input->post("id");
+
+		$this->load->model("TAREFAModel");
+		$t= $this->TAREFAModel;
+		$t->IDTAREFA = $id;
+		$dados = $t->carregar();
+
+    	echo json_encode($dados);
+	}
+
+}
 
 
 

@@ -124,7 +124,7 @@
 
                                 <!-- Botão Nova Cotação -->
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-dark btn-hover-blue" data-toggle="modal"
+                                    <button type="button" class="btn btn-dark btn-hover-blue" data-toggle="modal" name="btnNovaTarefa" id="btnNovaTarefa"
                                         data-target="#modal_novo">
                                         <i class="fa fa-plus"></i> Nova Tarefa
                                     </button>
@@ -141,7 +141,7 @@
                                     <select class="form-control text-blue" id="situacao" name="situacao">
                                         <option value="" selected>Todos</option>
                                         <option value="pendente">Pendente</option>
-                                        <option value="concluído">Concluído</option>
+                                        <option value="concluida">Concluída</option>
                                         <option value="cancelada">Cancelada</option>
                                     </select>
                                 </div>
@@ -182,42 +182,97 @@
         </div>
     </div>
 
-    <!--  MODAL DE TAREFA -->
-    <div class="modal fade" id="modalTarefa" tabindex="-1">
+    <!-- MODAL DE TAREFA -->
+    <div class="modal fade" id="modalTarefa" tabindex="-1" aria-labelledby="modalTarefaLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="formTarefa" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar/Editar Tarefa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content"> 
+                <form id="formTarefa" method="post" action="javascript:void(0);">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTarefaLabel">Cadastrar Tarefa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="IDTAREFA" id="IDTAREFA">
+
+                        <div class="mb-3">
+                            <label for="TITULO" class="form-label">Título</label>
+                            <input type="text" name="TITULO" id="TITULO" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="DESCRICAO" class="form-label">Descrição</label>
+                            <textarea name="DESCRICAO" id="DESCRICAO" class="form-control"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PRIORIDADE" class="form-label">Prioridade</label>
+                            <select name="PRIORIDADE" id="PRIORIDADE" class="form-select">
+                                <option value="baixa">Baixa</option>
+                                <option value="media">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PRAZO" class="form-label">Prazo</label>
+                            <input type="date" name="PRAZO" id="PRAZO" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Tarefa -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditar" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <form id="formEditar" method="post" action="javascript:void(0);">
+                <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalEditar">Editar Tarefa</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="IDTAREFA" id="IDTAREFA">
-                    <div class="mb-3">
-                        <label class="form-label">Título</label>
-                        <input type="text" name="TITULO" id="TITULO" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descrição</label>
-                        <textarea name="DESCRICAO" id="DESCRICAO" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Prioridade</label>
-                        <select name="PRIORIDADE" id="PRIORIDADE" class="form-select">
-                            <option value="baixa">Baixa</option>
-                            <option value="media">Média</option>
-                            <option value="alta">Alta</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Prazo</label>
-                        <input type="date" name="PRAZO" id="PRAZO" class="form-control">
-                    </div>
+                <input type="hidden" id="editar_idtarefa" name="idtarefa">
+                <div class="mb-3">
+                    <label for="editar_titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="editartitulo" name="titulo" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="editardescricao" name="descricao" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_categoria" class="form-label">Categoria</label>
+                    <select class="form-control" id="editarcategoria" name="idcategoria" required>
+                    <option value="1">Trabalho</option>
+                    <option value="2">Casa</option>
+                    <option value="3">Estudos</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_status" class="form-label">Status</label>
+                    <select class="form-control" id="editarstatus" name="status">
+                    <option value="pendente">Pendente</option>
+                    <option value="em_andamento">Em Andamento</option>
+                    <option value="concluida">Concluída</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editarprazo" class="form-label">Prazo</label>
+                    <input type="date" name="PRAZO" id="editarprazo" class="form-control">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" type="submit">Salvar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </form>
+            </div>
         </div>
     </div>
 
@@ -275,8 +330,8 @@
                     formatter: function(cell, formatterParams) {
                         var id = cell.getRow().getData().IDTAREFA;
                         return `
-                                <button type="button" class="btn btn-primary btn-sm btnEditarTarefa btn-space" data-id="${id}"><i class="fa fa-pencil"></i></button>
-                                <button type="button" class="btn btn-danger btn-sm btnExcluirTarefa" data-id="${id}"><i class="fa fa-times"></i></button>
+                                <button type="button" class="btn btn-primary btn-sm btnEditar btn-space" data-id="${id}"><i class="fa fa-pencil"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm btnExcluir" data-id="${id}"><i class="fa fa-times"></i></button>
                             `;
                     },
                 },
@@ -389,12 +444,10 @@
         $(function() {
 
             $('#formFiltro').on('submit', function() {
-
                 var datainicio = $('#formFiltro input[name="datainicio"]').val();
                 var datafinal = $('#formFiltro input[name="datafinal"]').val();
                 var situacao = $('#formFiltro select[name="situacao"]').val();
                 var descricao = $('#formFiltro input[name="filtrodescricao"]').val();
-
                 var filtros = [];
 
                 // Se tiver datas, usa as datas do form
@@ -432,9 +485,113 @@
                 }
 
                 tarefas.setFilter(filtros);
+            });
+
+            $('#btnLimpar').on('click', function() {
+                // Limpa os campos do formulário
+                $('#formFiltro')[0].reset();
+
+                // Calcula datas padrão: hoje e 30 dias atrás
+                var hoje = new Date();
+                var dataFim = hoje.toISOString().split('T')[0];
+
+                var dataInicioObj = new Date();
+                dataInicioObj.setDate(dataInicioObj.getDate() - 30);
+                var dataInicio = dataInicioObj.toISOString().split('T')[0];
+
+                // Aplica os filtros de 30 dias
+                tarefas.setFilter([{
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: ">=",
+                        value: dataInicio
+                    },
+                    {
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: "<=",
+                        value: dataFim
+                    }
+                ]);
+            });
+
+            $(document).on('click', '.btnAtualizarStatus', function() {
+
+                var id = $(this).attr('data-id');
+
+                Swal.fire({
+                    title: "",
+                    text: "Deseja alterar o status desta cotação?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Sim, alterar o status",
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        atualizar_status(id);
+                    }
+                });
 
             });
+
+           $(document).on('click', '.btnEditar', function () {
+            
+            var id = $(this).data('id');
+
+                $.ajax({
+                    url: '<?= base_url("Tarefa/carregartarefa/") ?>' + id,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data) {
+                            $('#editartitulo').val(data.TITULO);
+                            $('#editardescricao').val(data.DESCRICAO);
+                            $('#editarcategoria').val(data.IDCATEGORIA);
+                            $('#editarprazo').val(data.PRAZO);
+
+                            $('#modalEditar').modal('show');
+                        } else {
+                            Swal.fire('Erro', 'Tarefa não encontrada!', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Erro', 'Erro ao buscar os dados da tarefa!', 'error');
+                    }
+                });
+             });
+
         });
+
+        function atualizar_status(idtarefa){ 
+
+            $.post('<?= base_url("Tarefa/alterar_status"); ?>', {
+                idtarefa: idtarefa
+            }, function(data) {
+
+                if (data.sucesso) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status alterado!',
+                        text: 'O status da tarefa foi atualizado com sucesso.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    tarefas.setData(); 
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: data.mensagem || 'Erro ao atualizar status.'
+                    });
+                }
+            }).fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Falha na conexão!',
+                    text: 'Erro na comunicação com o servidor.'
+                });
+            });
+        }
 
         
     </script>

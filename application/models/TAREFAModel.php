@@ -33,6 +33,24 @@ class TAREFAModel extends CI_Model {
         }
     }// Fim da função inserir
 
+	function carregar(){
+
+		$query = $this->db->query("SELECT * FROM TAREFA WHERE IDTAREFA = ?", array($this->IDTAREFA));
+		$resultado = $query->result();
+		
+		//Se houver resultados, carrega resultado da consulta nos campos do Model
+		if(count($resultado) > 0){
+			foreach($query->list_fields() as $field){
+				$this->$field = $resultado[0]->$field;
+			}
+			return true;
+		}
+		else{
+			return false;	
+		}
+	
+	}//Fim da carregar
+
     function listar($filter = "") {
 
         $this->db->select("TAREFA.*, 
