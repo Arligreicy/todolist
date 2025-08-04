@@ -124,7 +124,7 @@
 
                                 <!-- Botão Nova Cotação -->
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-dark btn-hover-blue" data-toggle="modal" name="btnNovaTarefa" id="btnNovaTarefa"
+                                    <button type="button" class="btn btn-dark btn-hover-blue" data-toggle="modal" name="btnnovatarefa" id="btnnovatarefa"
                                         data-target="#modal_novo">
                                         <i class="fa fa-plus"></i> Nova Tarefa
                                     </button>
@@ -192,21 +192,21 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="IDTAREFA" id="IDTAREFA">
+                        <input type="hidden" name="idtarefa" id="IDTAREFA">
 
                         <div class="mb-3">
                             <label for="TITULO" class="form-label">Título</label>
-                            <input type="text" name="TITULO" id="TITULO" class="form-control" required>
+                            <input type="text" name="titulo" id="TITULO" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="DESCRICAO" class="form-label">Descrição</label>
-                            <textarea name="DESCRICAO" id="DESCRICAO" class="form-control"></textarea>
+                            <textarea name="descricao" id="DESCRICAO" class="form-control"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="PRIORIDADE" class="form-label">Prioridade</label>
-                            <select name="PRIORIDADE" id="PRIORIDADE" class="form-select">
+                            <select name="prioridade" id="PRIORIDADE" class="form-select">
                                 <option value="baixa">Baixa</option>
                                 <option value="media">Média</option>
                                 <option value="alta">Alta</option>
@@ -215,7 +215,7 @@
 
                         <div class="mb-3">
                             <label for="PRAZO" class="form-label">Prazo</label>
-                            <input type="date" name="PRAZO" id="PRAZO" class="form-control">
+                            <input type="date" name="prazo" id="PRAZO" class="form-control">
                         </div>
                     </div>
 
@@ -238,18 +238,18 @@
                 <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                <input type="hidden" id="editar_idtarefa" name="idtarefa">
+                <input type="hidden" id="editaridtarefa" name="idtarefa">
                 <div class="mb-3">
                     <label for="editar_titulo" class="form-label">Título</label>
-                    <input type="text" class="form-control" id="editartitulo" name="titulo" required>
+                    <input type="text" class="form-control" id="editartitulo" name="editartitulo" required>
                 </div>
                 <div class="mb-3">
                     <label for="editar_descricao" class="form-label">Descrição</label>
-                    <textarea class="form-control" id="editardescricao" name="descricao" rows="3" required></textarea>
+                    <textarea class="form-control" id="editardescricao" name="editardescricao" rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="editar_categoria" class="form-label">Categoria</label>
-                    <select class="form-control" id="editarcategoria" name="idcategoria" required>
+                    <select class="form-control" id="editarcategoria" name="editarcategoria" required>
                     <option value="1">Trabalho</option>
                     <option value="2">Casa</option>
                     <option value="3">Estudos</option>
@@ -257,7 +257,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="editar_status" class="form-label">Status</label>
-                    <select class="form-control" id="editarstatus" name="status">
+                    <select class="form-control" id="editarstatus" name="editarstatus">
                     <option value="pendente">Pendente</option>
                     <option value="em_andamento">Em Andamento</option>
                     <option value="concluida">Concluída</option>
@@ -265,7 +265,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="editarprazo" class="form-label">Prazo</label>
-                    <input type="date" name="PRAZO" id="editarprazo" class="form-control">
+                    <input type="date" name="editarprazo" id="editarprazo" class="form-control">
                 </div>
                 <div class="modal-footer">
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -534,31 +534,74 @@
 
             });
 
-           $(document).on('click', '.btnEditar', function () {
+            $(document).on('click', '.btnEditar', function () {
             
-            var id = $(this).data('id');
+                var id = $(this).data('id');
+
+                    $.ajax({
+                        url: '<?= base_url("Tarefa/carregartarefa/") ?>' + id,
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            if (data) {
+                                $('#editaridtarefa').val(data.IDTAREFA); 
+                                $('#editartitulo').val(data.TITULO);
+                                $('#editardescricao').val(data.DESCRICAO);
+                                $('#editarcategoria').val(data.IDCATEGORIA);
+                                $('#editarstatus').val(data.STATUS); 
+                                $('#editarprazo').val(data.PRAZO);
+                                $('#modalEditar').modal('show');
+
+                            } else {
+                                Swal.fire('Erro', 'Tarefa não encontrada!', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Erro', 'Erro ao buscar os dados da tarefa!', 'error');
+                        }
+                    });
+                
+            });
+
+            $('#formEditar').on('submit', function() {
+
+                var id = $('#editaridtarefa').val();
+                var titulo = $('#editartitulo').val();
+                var descricao = $('#editardescricao').val();
+                var categoria = $('#editarcategoria').val();
+                var status = $('#editarstatus').val();
+                var prazo = $('#editarprazo').val();
 
                 $.ajax({
-                    url: '<?= base_url("Tarefa/carregartarefa/") ?>' + id,
+                    url: '<?= base_url("Tarefa/atualizar/") ?>' + id,
                     type: 'POST',
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data) {
-                            $('#editartitulo').val(data.TITULO);
-                            $('#editardescricao').val(data.DESCRICAO);
-                            $('#editarcategoria').val(data.IDCATEGORIA);
-                            $('#editarprazo').val(data.PRAZO);
+                    data: {
+                        titulo: titulo,
+                        descricao: descricao,
+                        idcategoria: categoria,
+                        status: status,
+                        prazo: prazo
+                    },
+                    success: function(response) {
 
-                            $('#modalEditar').modal('show');
+                        if (response.sucesso) {
+
+                            Swal.fire('Sucesso', 'Tarefa atualizada com sucesso!', 'success');
+                            tarefas.setData(); 
+
+                            $('#modalEditar').modal('hide');
+
                         } else {
-                            Swal.fire('Erro', 'Tarefa não encontrada!', 'error');
+                            Swal.fire('Erro', response.mensagem || 'Erro ao atualizar tarefa.', 'error');
                         }
                     },
-                    error: function () {
-                        Swal.fire('Erro', 'Erro ao buscar os dados da tarefa!', 'error');
+                    error: function() {
+                        Swal.fire('Erro', 'Erro ao comunicar com o servidor.', 'error');
                     }
                 });
-             });
+
+            });
 
         });
 

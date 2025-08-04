@@ -71,17 +71,64 @@ class Tarefa extends CI_Controller {
 
 	}//Fim da função alterar_status
 
-	function carregartarefa() {
+	function carregartarefa($id) {
 
-		$id = $this->input->post("id");
+		header('Content-Type: application/json');
+
+		if (!is_numeric($id)) {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'ID inválido']);
+			return;
+		}
 
 		$this->load->model("TAREFAModel");
-		$t= $this->TAREFAModel;
+		$t = $this->TAREFAModel;
 		$t->IDTAREFA = $id;
-		$dados = $t->carregar();
 
-    	echo json_encode($dados);
+		if ($t->carregar()) {
+			// Prepara os dados para o retorno
+			$dados = [
+				'IDTAREFA' => $t->IDTAREFA,
+				'TITULO' => $t->TITULO,
+				'DESCRICAO' => $t->DESCRICAO,
+				'IDCATEGORIA' => $t->IDCATEGORIA,
+				'STATUS' => $t->STATUS,
+				'PRAZO' => $t->PRAZO
+			];
+
+			echo json_encode($dados);
+		} else {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'Tarefa não encontrada']);
+		}
 	}
+
+	function atualizar($id) {
+
+		header('Content-Type: application/json');
+		
+		$this->load->model("TAREFAModel");
+		$t = $this->TAREFAModel;
+		$t->IDTAREFA = $id;
+		$t->carregar();
+			
+		if (!$t->IDTAREFA) {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'Tarefa não encontrada']);
+			return;
+		}
+
+		// Atualiza os campos
+		$t->STATUS = $this->input->post("status");
+		$t->TITULO = $this->input->post("titulo");
+		$t->DESCRICAO = $this->input->post("descricao");
+		$t->IDCATEGORIA = $this->input->post("idcategoria");
+		$t->PRAZO = $this->input->post("prazo");
+		$t->IDTAREFA = $id;
+
+		if ($t->atualizar()) {
+			echo json_encode(['sucesso' => true]);
+		} else {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar a tarefa.']);
+		}
+	}//Fim da função atualizar
 
 }
 
