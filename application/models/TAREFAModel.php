@@ -139,6 +139,7 @@ class TAREFAModel extends CI_Model {
 				SET
 					TITULO = ?,
 					DESCRICAO = ?,
+					JUSTIFICATIVA = ?,
                     PRIORIDADE = ?,
 					STATUS = ?,
                     PRAZO = ?,
@@ -153,6 +154,7 @@ class TAREFAModel extends CI_Model {
 
 		$query = $this->db->query($sql, array($this->TITULO,
 											  $this->DESCRICAO,
+											  $this->JUSTIFICATIVA,
 											  $this->PRIORIDADE,
 											  $this->STATUS,
 											  $this->PRAZO,

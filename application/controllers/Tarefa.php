@@ -90,6 +90,7 @@ class Tarefa extends CI_Controller {
 				'IDTAREFA' => $t->IDTAREFA,
 				'TITULO' => $t->TITULO,
 				'DESCRICAO' => $t->DESCRICAO,
+				'JUSTIFICATIVA' => $t->JUSTIFICATIVA,
 				'IDCATEGORIA' => $t->IDCATEGORIA,
 				'STATUS' => $t->STATUS,
 				'PRAZO' => $t->PRAZO
@@ -119,6 +120,7 @@ class Tarefa extends CI_Controller {
 		$t->STATUS = $this->input->post("status");
 		$t->TITULO = $this->input->post("titulo");
 		$t->DESCRICAO = $this->input->post("descricao");
+		$t->JUSTIFICATIVA = $this->input->post("justificativa");
 		$t->IDCATEGORIA = $this->input->post("idcategoria");
 		$t->PRAZO = $this->input->post("prazo");
 		$t->IDTAREFA = $id;
@@ -129,6 +131,33 @@ class Tarefa extends CI_Controller {
 			echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar a tarefa.']);
 		}
 	}//Fim da função atualizar
+
+	function inserir() {
+
+		header('Content-Type: application/json');
+
+		$this->load->model("TAREFAModel");
+		$t = $this->TAREFAModel;
+
+		// Preenche os campos do model
+		$t->TITULO = $this->input->post("titulo");
+		$t->DESCRICAO = $this->input->post("descricao");
+		$t->JUSTIFICATIVA = $this->input->post("justificativa");
+		$t->PRIORIDADE = $this->input->post("prioridade");
+		$t->STATUS = 'pendente'; // Status inicial
+		$t->PRAZO = $this->input->post("prazo");
+		$t->IDUSUARIO = $_SESSION['idusuario']; // ID do usuário logado
+		$t->IDCATEGORIA = $this->input->post("categoria");
+		$t->DATACRIACAO = date('Y-m-d H:i:s'); 
+		$t->DATACONCLUSAO = null; // Inicialmente nulo
+
+		if ($t->inserir()) {
+			echo json_encode(['sucesso' => true]);
+		} else {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao cadastrar tarefa.']);
+		}
+		
+	} // Fim da função inserir
 
 }
 

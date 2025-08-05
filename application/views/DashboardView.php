@@ -60,7 +60,7 @@
                 background-color: #f8f9fa;
             }
             .btn-hover-blue:hover {
-                background-color: #321fdb !important; 
+                background-color:rgb(1, 0, 7) !important; 
                 border-color: #321fdb !important;
                 color: white !important;
             }
@@ -80,7 +80,7 @@
     <!-- HEADER -->
     <header class="c-header c-header-light c-header-fixed header-dashboard">
         <ul class="c-header-nav ml-auto mr-4">
-            <h1>Minhas Tarefas do Dia - <?= date('d/m/Y') ?></h1>
+            <h1>Minhas Tarefas do Dia - <?= date('d/m/Y') ?> - <?= $_SESSION['nome'] ?></h1>
             <li class="c-header-nav-item">
                 <a class="c-header-nav-link btn btn-outline-danger btn-space" href="<?= base_url('usuario/logout') ?>">
                      🔓 Sair
@@ -124,8 +124,8 @@
 
                                 <!-- Botão Nova Cotação -->
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-dark btn-hover-blue" data-toggle="modal" name="btnnovatarefa" id="btnnovatarefa"
-                                        data-target="#modal_novo">
+                                    <button type="button" class="btn btn-dark btn-hover-blue" data-bs-toggle="modal" name="btnnovatarefa" id="btnnovatarefa"
+                                        data-bs-target="#modalTarefa">
                                         <i class="fa fa-plus"></i> Nova Tarefa
                                     </button>
                                 </div>
@@ -183,45 +183,59 @@
     </div>
 
     <!-- MODAL DE TAREFA -->
-    <div class="modal fade" id="modalTarefa" tabindex="-1" aria-labelledby="modalTarefaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTarefa" tabindex="-1" aria-labelledby="modalTarefa" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content"> 
                 <form id="formTarefa" method="post" action="javascript:void(0);">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalTarefaLabel">Cadastrar Tarefa</h5>
+                    <div class="modal-header bg-black text-white">
+                        <h5 class="modal-title" id="modalTarefa">Cadastrar Tarefa</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="idtarefa" id="IDTAREFA">
 
                         <div class="mb-3">
-                            <label for="TITULO" class="form-label">Título</label>
-                            <input type="text" name="titulo" id="TITULO" class="form-control" required>
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" name="titulo" id="titulo" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="DESCRICAO" class="form-label">Descrição</label>
-                            <textarea name="descricao" id="DESCRICAO" class="form-control"></textarea>
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea name="descricao" id="descricao" class="form-control"></textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label for="PRIORIDADE" class="form-label">Prioridade</label>
-                            <select name="prioridade" id="PRIORIDADE" class="form-select">
+                            <label for="prioridade" class="form-label">Prioridade</label>
+                            <select name="prioridade" id="prioridade" class="form-select">
                                 <option value="baixa">Baixa</option>
                                 <option value="media">Média</option>
                                 <option value="alta">Alta</option>
                             </select>
                         </div>
 
+                          <div class="mb-3">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <select name="categoria" id="categoria" class="form-select">
+                                <option value="1">Trabalho</option>
+                                <option value="2">Casa</option>
+                                <option value="3">Estudos</option>
+                            </select>
+                        </div>
+
                         <div class="mb-3">
-                            <label for="PRAZO" class="form-label">Prazo</label>
-                            <input type="date" name="prazo" id="PRAZO" class="form-control">
+                            <label for="justificativa" class="form-label">Justificativa</label>
+                            <textarea name="justificativa" id="justificativa" class="form-control"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prazo" class="form-label">Prazo</label>
+                            <input type="date" name="prazo" id="prazo" class="form-control">
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Salvar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -233,7 +247,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
             <form id="formEditar" method="post" action="javascript:void(0);">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header bg-black text-white">
                 <h5 class="modal-title" id="modalEditar">Editar Tarefa</h5>
                 <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
@@ -248,6 +262,10 @@
                     <textarea class="form-control" id="editardescricao" name="editardescricao" rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
+                    <label for="editar_justificativa" class="form-label">Justificativa</label>
+                    <textarea class="form-control" id="editarjustificativa" name="editarjustificativa" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
                     <label for="editar_categoria" class="form-label">Categoria</label>
                     <select class="form-control" id="editarcategoria" name="editarcategoria" required>
                     <option value="1">Trabalho</option>
@@ -259,7 +277,7 @@
                     <label for="editar_status" class="form-label">Status</label>
                     <select class="form-control" id="editarstatus" name="editarstatus">
                     <option value="pendente">Pendente</option>
-                    <option value="em_andamento">Em Andamento</option>
+                    <option value="progresso">Em Progresso</option>
                     <option value="concluida">Concluída</option>
                     </select>
                 </div>
@@ -269,7 +287,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </form>
             </div>
@@ -548,6 +566,7 @@
                                 $('#editaridtarefa').val(data.IDTAREFA); 
                                 $('#editartitulo').val(data.TITULO);
                                 $('#editardescricao').val(data.DESCRICAO);
+                                $('#editarjustificativa').val(data.JUSTIFICATIVA);
                                 $('#editarcategoria').val(data.IDCATEGORIA);
                                 $('#editarstatus').val(data.STATUS); 
                                 $('#editarprazo').val(data.PRAZO);
@@ -564,11 +583,17 @@
                 
             });
 
+            $(document).on('click', '.btnnovatarefa', function() {
+                $('#modalTarefa').modal('show');
+                $('#formTarefa')[0].reset(); 
+            });
+
             $('#formEditar').on('submit', function() {
 
                 var id = $('#editaridtarefa').val();
                 var titulo = $('#editartitulo').val();
                 var descricao = $('#editardescricao').val();
+                var justificativa = $('#editarjustificativa').val();
                 var categoria = $('#editarcategoria').val();
                 var status = $('#editarstatus').val();
                 var prazo = $('#editarprazo').val();
@@ -579,6 +604,7 @@
                     data: {
                         titulo: titulo,
                         descricao: descricao,
+                        justificativa: justificativa,
                         idcategoria: categoria,
                         status: status,
                         prazo: prazo
@@ -601,6 +627,45 @@
                     }
                 });
 
+            });
+
+            $('#formTarefa').on('submit', function(data) {
+
+                data.preventDefault();
+
+                var dados = {                                        
+                    titulo: $('#titulo').val(),
+                    descricao: $('#descricao').val(),
+                    prioridade: $('#prioridade').val(),
+                    justificativa: $('#justificativa').val(),
+                    categoria: $('#categoria').val(),
+                    prazo: $('#prazo').val()
+                };
+
+                $.ajax({
+                    url: '<?= base_url("Tarefa/inserir") ?>',
+                    type: 'POST',
+                    data: dados,
+                    dataType: 'json',
+
+                    success: function(response) {
+
+                        if (response.sucesso) {
+
+                            Swal.fire('Sucesso', 'Tarefa cadastrada com sucesso!', 'success');
+
+                            $('#modalTarefa').modal('hide');
+                            $('#formTarefa')[0].reset();
+
+                            tarefas.setData();
+                        } else {
+                            Swal.fire('Erro', response.mensagem || 'Erro ao cadastrar tarefa.', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erro', 'Erro ao comunicar com o servidor.', 'error');
+                    }
+                });
             });
 
         });
