@@ -94,6 +94,31 @@ class Usuario extends CI_Controller {
             }
         }
 
+        function carregarperfil() {
+
+            header('Content-Type: application/json');
+
+            if (!isset($_SESSION['login'])) {
+                redirect(base_url("Usuario/login"));
+            }
+
+            $this->load->model('USUARIOModel');
+            $u = $this->USUARIOModel;
+            $u->IDUSUARIO = $_SESSION['idusuario'];
+
+            if ($u->carregar()) {
+
+                $dados = [
+                    'idusuario' => $u->IDUSUARIO,
+                    'nome' => $u->NOME
+                   
+                ];
+                echo json_encode(['status' => 'ok', 'dados' => $dados]);
+            } else {
+                echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao editar usuário.']);
+            }
+        } // Fim da função editarperfil
+
     }
 
 

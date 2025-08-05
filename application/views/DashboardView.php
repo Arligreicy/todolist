@@ -89,7 +89,7 @@
         </ul>
     </header>
 
-        <!--  SIDEBAR -->
+    <!--  SIDEBAR -->
     <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
 
         <div class="c-sidebar-brand d-md-down-none text-center py-3">
@@ -98,12 +98,12 @@
 
         <ul class="c-sidebar-nav">
             <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link active" href="#">
+                <a class="c-sidebar-nav-link active" href="<?= base_url('tarefa/listar') ?>">
                     <i class="fas fa-list me-2"></i> Minhas Tarefas
                 </a>
             </li>
             <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link" href="#">
+                <a class="c-sidebar-nav-link" onclick="abrirmodalperfil()">
                     <i class="fas fa-user me-2"></i> Meu Perfil
                 </a>
             </li>
@@ -242,7 +242,7 @@
         </div>
     </div>
 
-    <!-- Modal Editar Tarefa -->
+    <!-- MODAL EDITAR TAREFA -->
     <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditar" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -284,6 +284,38 @@
                 <div class="mb-3">
                     <label for="editarprazo" class="form-label">Prazo</label>
                     <input type="date" name="editarprazo" id="editarprazo" class="form-control">
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR PERFIL -->
+    <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfil" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <form id="formEditarPerfil" method="post" action="javascript:void(0);">
+                <div class="modal-header bg-black text-white">
+                <h5 class="modal-title" id="modalEditarPerfil">Editar Perfil</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                <input type="hidden" id="editaridusuario" name="idusuario">
+                <div class="mb-3">
+                    <label for="editar_nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="editarnome" name="editarnome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_senha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="editarsenha" name="editarsenha" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_confirmar_senha" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="editarconfirmarsenha" name="editarconfirmarsenha" required>
                 </div>
                 <div class="modal-footer">
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -667,7 +699,7 @@
                     }
                 });
             });
-
+           
         });
 
         function atualizar_status(idtarefa){ 
@@ -698,6 +730,33 @@
                     title: 'Falha na conexão!',
                     text: 'Erro na comunicação com o servidor.'
                 });
+            });
+        }
+
+        function abrirmodalperfil() {
+            
+                $.ajax({
+                url: '<?= base_url("Usuario/carregarperfil") ?>',
+                type: 'POST',
+                dataType: 'json',
+                success: function(data) {
+                  
+                    if (data.status === 'ok') {
+                        
+                        $('#editarnome').val(data.dados.NOME);
+                        $('#editarsenha').val(''); 
+                        $('#editarconfirmarsenha').val(''); 
+                        $('#editaridusuario').val(data.dados.IDUSUARIO);
+                        $('#modalEditarPerfil').modal('show');
+                        console.log("Dados do usuário carregados com sucesso:", data.dados);
+
+                    } else {
+                        Swal.fire('Erro', data.mensagem || 'Usuário não encontrado!', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Erro', 'Erro ao buscar os dados do usuário!', 'error');
+                }
             });
         }
 
