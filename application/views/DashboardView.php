@@ -58,6 +58,7 @@
             .c-body{
                 padding-top: 70px;
                 background-color: #f8f9fa;
+                padding-bottom: 70px;
             }
             .btn-hover-blue:hover {
                 background-color:rgb(1, 0, 7) !important; 
@@ -70,6 +71,42 @@
             }
             .text-blue {
                 color: #321fdb !important; 
+            }
+            .c-footer {
+                background-color: #000; /* Preto para combinar com a sidebar */
+                color: #fff;
+                padding: 15px 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                font-size: 14px;
+                z-index: 1030;
+            }
+
+            .c-footer a {
+                color: #321fdb; /* Azul padrão do seu sistema */
+                text-decoration: none;
+            }
+
+            .c-footer a:hover {
+                color: #0d6efd;
+                text-decoration: underline;
+            }
+            .footer-right a {
+                margin-left: 10px; /* espaçamento entre os ícones */
+                color: #333; /* cor padrão */
+                text-decoration: none;
+                font-size: 18px;
+                transition: color 0.3s ease;
+            }
+
+            .footer-right a:hover {
+                color: #007bff; /* cor no hover */
+            }
+            .footer-right a:first-child {
+                margin-left: 20px; /* dá espaço entre o nome e o GitHub */
             }
         </style>
 
@@ -182,6 +219,27 @@
             </main>
         </div>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="c-footer animated-footer">
+        <div class="footer-left">
+            <span>&copy; <?= date('Y') ?> ToDoList 📝</span>
+            <span class="divider">|</span>
+            <span>Desenvolvido com <i class="fas fa-heart text-danger"></i> por <strong>Arligreicy</strong></span>
+        </div>
+    
+        <div class="footer-right">
+            <a href="https://github.com/Arligreicy" title="GitHub" target="_blank">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/arligreicy-castro/" title="LinkedIn" target="_blank">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:arligreicy.1@gmail.com" title="E-mail">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
 
     <!-- MODAL DE TAREFA -->
     <div class="modal fade" id="modalTarefa" tabindex="-1" aria-labelledby="modalTarefa" aria-hidden="true">
@@ -334,7 +392,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/luxon@2.3.1/build/global/luxon.min.js"></script>
     <!-- dependencia para manipular datas dentro do tabulator -->
 
-
+    
     <script>
 
         var tarefas = new Tabulator("#tarefas-tab", {            
