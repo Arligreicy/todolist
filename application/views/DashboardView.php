@@ -109,7 +109,7 @@
             </li>
             <li class="c-sidebar-nav-item">
                 <a class="c-sidebar-nav-link">
-                    <i class="fas fa-user me-2"></i> Falta inserir a função de esxcluir uma tarefa
+                    <i class="fas fa-user me-2"></i> Falta inserir a função de excluir uma tarefa na tela principal
                 </a>
             </li>
         </ul>
