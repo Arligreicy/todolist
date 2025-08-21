@@ -158,7 +158,27 @@ class Tarefa extends CI_Controller {
 		}
 		
 	} // Fim da função inserir
+	
+	function excluir($id) {
 
+		header('Content-Type: application/json');
+
+		if (!is_numeric($id)) {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'ID inválido']);
+			return;
+		}
+
+		$this->load->model("TAREFAModel");
+		$t = $this->TAREFAModel;
+		$t->IDTAREFA = $id;
+
+		if ($t->excluir()) {
+			echo json_encode(['sucesso' => true]);
+		} else {
+			echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao excluir a tarefa.']);
+		}
+		
+	} // Fim da função excluir
 }
 
 

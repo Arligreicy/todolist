@@ -107,11 +107,7 @@
                     <i class="fas fa-user me-2"></i> Meu Perfil
                 </a>
             </li>
-            <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link">
-                    <i class="fas fa-user me-2"></i> Falta inserir a função de excluir uma tarefa na tela principal
-                </a>
-            </li>
+            
         </ul>
     </div>
 
@@ -461,18 +457,15 @@
                     headerHozAlign: "center",
 
                     formatter: function(cell) {
-                        let data = cell.getValue();
+                        const data = cell.getValue();
                         if (!data) return "";
-                        let d = new Date(data);
-                        if (isNaN(d.getTime())) return data;
 
-                        let dia = String(d.getDate()).padStart(2, '0');
-                        let mes = String(d.getMonth() + 1).padStart(2, '0');
-                        let ano = d.getFullYear();
-                        let hora = String(d.getHours()).padStart(2, '0');
-                        let minuto = String(d.getMinutes()).padStart(2, '0');
+                        // Pega só a parte da data (ignora hora se vier junto)
+                        const partes = data.split(" ")[0].split("-");
+                        if (partes.length !== 3) return data; 
 
-                        return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+                        const [ano, mes, dia] = partes;
+                        return `${dia.padStart(2,'0')}/${mes.padStart(2,'0')}/${ano}`;
                     }
                 },
                 {
@@ -644,7 +637,7 @@
                         justificativa: justificativa,
                         idcategoria: categoria,
                         status: status,
-                        prazo: prazo
+                        prazo: prazo,
                     },
                     success: function(response) {
 
@@ -704,7 +697,49 @@
                     }
                 });
             });
-           
+
+            $(document).on('click', '.btnExcluir', function() {
+
+                var idtarefa = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: "Você não poderá reverter isso!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sim, excluir!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post('<?= base_url("Tarefa/excluir/"); ?>' + idtarefa, {
+                            idtarefa: idtarefa
+                        }, function(data) {
+                            if (data.sucesso) {
+                                Swal.fire(
+                                    'Excluído!',
+                                    'A tarefa foi excluída com sucesso.',
+                                    'success'
+                                );
+                                tarefas.setData();
+                            } else {
+                                Swal.fire(
+                                    'Erro!',
+                                    data.mensagem || 'Erro ao excluir a tarefa.',
+                                    'error'
+                                );
+                            }
+                        }).fail(function() {
+                            Swal.fire(
+                                'Erro!',
+                                'Erro na comunicação com o servidor.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+
         });
 
         function atualizar_status(idtarefa){ 
