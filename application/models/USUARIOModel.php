@@ -26,13 +26,74 @@ class USUARIOModel extends CI_Model {
         }
     }// Fim da função inserir
 
-    function listar() {
+    function listar($filter = ""){
 
-        $query = $this->db->query("SELECT * FROM USUARIO");
-        
+        $this->db->from('USUARIO');
+
+        // Aplicar filtros dinâmicos, se existirem
+        if ($filter != '') {
+            foreach ($filter as $f) {
+                $campo = $f['field'];
+                $operador = $f['type']; // '=', 'LIKE', '>=', etc.
+                $valor = $f['value'];
+
+                if ($campo === 'compare') {
+                    $this->db->where($valor, null, false);
+                } else {
+                    // LIKE deve ser tratado de forma especial
+                    if (strtoupper(trim($operador)) == 'LIKE') {
+                        $this->db->like($campo, $valor);
+                    } else {
+                        $this->db->where("$campo $operador", $valor);
+                    }
+                }
+            }
+        }
+
+        // Executa a query
+        $query = $this->db->get();
         return $query->result();
+    } // Fim da função listar
 
-    }// Fim da função listar
+
+    function listar_ajax($page, $size, $offset, $filter = "", $sort = "") {
+
+        $this->db->select("USUARIO.*");
+        $this->db->from("USUARIO");
+
+        // Filtros dinâmicos
+        if ($filter != '') {
+            foreach ($filter as $f) {
+                $campo = $f['field'];
+                $operador = $f['type'];
+                $valor = $f['value'];
+
+                if ($campo === 'compare') {
+                    $this->db->where($valor, null, false);
+                } else {
+                    if (strtoupper(trim($operador)) == 'LIKE') {
+                        $this->db->like($campo, $valor);
+                    } else {
+                        $this->db->where("$campo $operador", $valor);
+                    }
+                }
+            }
+        }
+
+        // Ordenação
+        if ($sort != '') {
+            $this->db->order_by($sort[0]['field'], $sort[0]['dir']);
+        } else {
+            $this->db->order_by("USUARIO.IDUSUARIO", "desc");
+        }
+
+        // Paginação (limit e offset)
+        $this->db->limit($size, $offset);
+
+        // Executa a query
+        $query = $this->db->get();
+        return $query->result();
+    } // Fim da função listar_ajax
 
     function carregar() {
 

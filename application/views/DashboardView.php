@@ -485,7 +485,7 @@
                     field: "JUSTIFICATIVA",
                     width: 150,
                 },
-                 {
+                {
                     title: "Data de Criação",
                     field: "DATACRIACAO",
                     width: 150,
@@ -507,7 +507,7 @@
                         return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
                     }
                 },
-               {
+                {
                     title: "Prazo de Conclusão",
                     field: "PRAZO",
                     width: 150,
