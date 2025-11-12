@@ -51,42 +51,38 @@ class TAREFAModel extends CI_Model {
 	
 	}//Fim da carregar
 
-    function listar($filter = "") {
+     function listar($filter = "") {
 
-        $this->db->select("TAREFA.*, 
-                        USUARIO.NOME AS NOMEUSUARIO, 
-                        CATEGORIA.NOME AS NOMECATEGORIA,
-						TAREFA.DESCRICAO AS DESCRICAO");
+        $this->db->select("TAREFA.*, USUARIO.NOME AS NOMEUSUARIO, CATEGORIA.NOME AS NOMECATEGORIA");
         $this->db->from('TAREFA');
         $this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
         $this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
-
 
         if (!empty($filter)) {
             foreach ($filter as $f) {
                 $campo = $f['field'];
                 $operador = $f['type'];
                 $valor = $f['value'];
-
-                if ($campo === 'compare') {
-                    $this->db->where($valor, null, false);
-                } else {
-                    $this->db->where("$campo $operador", $valor);
-                }
+                $this->db->where("$campo $operador", $valor);
             }
+        }
+
+        // Opcional: exibir apenas tarefas do usuário logado
+        if (isset($_SESSION['idusuario'])) {
+            $this->db->where('TAREFA.IDUSUARIO', $_SESSION['idusuario']);
         }
 
         $query = $this->db->get();
         return $query->result();
 
     }// Fim da função listar
-
+   
 	function listar_ajax($page, $size, $offset, $filter = "", $sort = []) {
 
 		$this->db->select("TAREFA.*, 
 						USUARIO.NOME AS NOMEUSUARIO, 
 						CATEGORIA.NOME AS NOMECATEGORIA,
-						TAREFA.DESCRICAO AS DESCRICAO");
+						TAREFA.TITULO AS TITULO");
 		$this->db->from('TAREFA');
 		$this->db->join('USUARIO', 'USUARIO.IDUSUARIO = TAREFA.IDUSUARIO', 'left');
 		$this->db->join('CATEGORIA', 'CATEGORIA.IDCATEGORIA = TAREFA.IDCATEGORIA', 'left');
@@ -111,9 +107,9 @@ class TAREFAModel extends CI_Model {
 			$campo_sort = $sort[0]['field'];
 			$direcao = $sort[0]['dir'];
 
-			// Evita erro de tipos em campos como DESCRICAO (MS SQL Server)
-			if ($campo_sort === 'DESCRICAO') {
-				$campo_sort = "CONVERT(VARCHAR(MAX), TAREFA.DESCRICAO)";
+			// Evita erro de tipos em campos como TITULO (MS SQL Server)
+			if ($campo_sort === 'TITULO') {
+				$campo_sort = "CONVERT(VARCHAR(MAX), TAREFA.TITULO)";
 				$this->db->order_by($campo_sort, $direcao, false); // não escapa
 			}
 
@@ -143,10 +139,8 @@ class TAREFAModel extends CI_Model {
                     PRIORIDADE = ?,
 					STATUS = ?,
                     PRAZO = ?,
-                    DATACRIACAO = ?,
-					DATACONCLUSAO = ?,
-                    JUSTIFICATIVA = ?,
-					IDUSUARIO = ?,
+            		DATACONCLUSAO = ?,
+                    IDUSUARIO = ?,
 					IDCATEGORIA = ?
 										
 				WHERE
@@ -158,10 +152,8 @@ class TAREFAModel extends CI_Model {
 											  $this->PRIORIDADE,
 											  $this->STATUS,
 											  $this->PRAZO,
-											  $this->DATACRIACAO,
 											  $this->DATACONCLUSAO,
-                                              $this->JUSTIFICATIVA,
-											  $this->IDUSUARIO,
+                                              $this->IDUSUARIO,
 											  $this->IDCATEGORIA,
 										
 											  $this->IDTAREFA));

@@ -52,3 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'Home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['calendario'] = 'Calendario/index';
+$route['calendario/eventos'] = 'Calendario/listar_eventos';
+$route['calendario/atualizar_prazo'] = 'Calendario/atualizar_prazo';

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Dashboard | Tarefas do dia </title>
+
+
+        <!-- ⚙️ HEAD: Ajustes de versão Bootstrap e CoreUI -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?= base_url(); ?>/assets/coreui/dist/css/coreui.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Icons-->
+        <link href="<?php echo base_url(); ?>/assets/coreui/icons/coreui-icons.min.css" rel="stylesheet" />
+        <link href="<?php echo base_url(); ?>/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css"rel="stylesheet" />
+
+        <!-- Font Awesome via CDN -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-HY+v0Szf... (continua)" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <style>
+
+            /* Força o modal do Bootstrap/CoreUI a ficar acima de todos os elementos */
+            .modal {
+            z-index: 2000 !important;
+            }
+            .modal-backdrop {
+            z-index: 1999 !important;
+            }
+            .todo-card {
+                border-left: 5px solid #321fdb; 
+            }
+            .completed { 
+                text-decoration: line-through; 
+                color: #6c757d; 
+            }
+            .header-dashboard {
+                background-color: #f8f9fa;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                padding: 10px 20px;
+              
+            }
+            .header-dashboard h1 {
+                font-size: 24px;
+                color: #333;
+            }
+            .c-sidebar {
+                background-color:rgb(0, 0, 0);
+            }
+            .btn-space{
+                margin-right: 10px;
+                margin-bottom: 10px;
+                margin-top: 10px;
+                margin-left: 10px;
+            }
+            .c-main{
+                 padding-top: 70px;
+            }
+            .c-body{
+                padding-top: 70px;
+                background-color: #f8f9fa;
+                padding-bottom: 70px;
+            }
+            .btn-hover-blue:hover {
+                background-color:rgb(1, 0, 7) !important; 
+                border-color: #321fdb !important;
+                color: white !important;
+            }
+            .placeholder-blue::placeholder {
+                color: #321fdb ; 
+                opacity: 1; 
+            }
+            .text-blue {
+                color: #321fdb !important; 
+            }
+            .c-footer {
+                background-color: #000; /* Preto para combinar com a sidebar */
+                color: #fff;
+                padding: 15px 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                font-size: 14px;
+                z-index: 1030;
+            }
+
+            .c-footer a {
+                color: #321fdb; /* Azul padrão do seu sistema */
+                text-decoration: none;
+            }
+
+            .c-footer a:hover {
+                color: #0d6efd;
+                text-decoration: underline;
+            }
+            .footer-right a {
+                margin-left: 10px; /* espaçamento entre os ícones */
+                color: #333; /* cor padrão */
+                text-decoration: none;
+                font-size: 18px;
+                transition: color 0.3s ease;
+            }
+
+            .footer-right a:hover {
+                color: #007bff; /* cor no hover */
+            }
+            .footer-right a:first-child {
+                margin-left: 20px; /* dá espaço entre o nome e o GitHub */
+            }
+        </style>
+
+    </head>
+
+<body class="c-app">
+
+    <!-- HEADER -->
+    <header class="c-header c-header-light c-header-fixed header-dashboard">
+        <ul class="c-header-nav ml-auto mr-4">
+            <h1>Minhas Tarefas do Dia - <?= date('d/m/Y') ?> - <?= $_SESSION['nome'] ?></h1>
+            <li class="c-header-nav-item">
+                <a class="c-header-nav-link btn btn-outline-danger btn-space" href="<?= base_url('usuario/logout') ?>">
+                     🔓 Sair
+                </a>
+            </li>
+        </ul>
+    </header>
+
+    <!--  SIDEBAR -->
+    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+
+        <div class="c-sidebar-brand d-md-down-none text-center py-3">
+            <h4 class="text-white m-auto"><strong> ToDoList 📝 </strong></h4>
+        </div>
+
+        <ul class="c-sidebar-nav">
+
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link active" href="<?= base_url('tarefa/index') ?>">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link active" href="<?= base_url('tarefa/listar') ?>">
+                    <i class="fas fa-list me-2"></i> Minhas Tarefas
+                </a>
+            </li>
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link" href="javascript:void(0)" onclick="abrir_modal_perfil()">
+                    <i class="fas fa-user me-2"></i> Meu Perfil
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+
+    <!--  CONTEÚDO PRINCIPAL -->
+    <div class="c-wrapper">
+        <div class="c-body">
+            <main class="c-main">
+                <div class="container-fluid">
+
+                    <div class="tab-pane fade show active" id="tarefas" role="tabpanel" aria-labelledby="tarefas-tab">
+
+                        <!-- FORMULÁRIO DE FILTRO -->
+                        <form id="formFiltro" method="post" action="javascript:void(0);">
+                            <div class="row gx-3 gy-2 align-items-end mb-3">
+
+                                <!-- Botão Nova Cotação -->
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-dark btn-hover-blue" data-bs-toggle="modal" name="btnnovatarefa" id="btnnovatarefa"
+                                        data-bs-target="#modalTarefa">
+                                        <i class="fa fa-plus"></i> Nova Tarefa
+                                    </button>
+                                </div>
+
+                                <!-- Campo Descrição -->
+                                <div class="col-md">
+                                    <input type="text" class="form-control placeholder-blue" id="filtrodescricao"
+                                        name="filtrodescricao" placeholder="Pesquisar por descrição">
+                                </div>
+
+                                <!-- Campo Situação -->
+                                <div class="col-md-2">
+                                    <select class="form-control text-blue" id="situacao" name="situacao">
+                                        <option value="" selected>Todos</option>
+                                        <option value="pendente">Pendente</option>
+                                        <option value="concluida">Concluída</option>
+                                        <option value="cancelada">Cancelada</option>
+                                    </select>
+                                </div>
+
+                                <!-- Campo Período -->
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <input type="date" class="form-control text-blue" id="datainicio" name="datainicio"
+                                            value="<?php echo date('Y-m-d', strtotime('-30 days')); ?>" required>
+                                        <span class="input-group-text">à</span>
+                                        <input type="date" class="form-control text-blue" id="datafinal" name="datafinal"
+                                            value="<?php echo date('Y-m-d'); ?>" required>
+                                    </div>
+                                </div>
+
+                                <!-- Botões -->
+                                <div class="col-auto">
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn btn-dark btn-hover-blue" id="btnFiltrar">
+                                            <i class="fa fa-filter"></i> Filtrar
+                                        </button>
+                                        <button type="button" id="btnLimpar" class="btn btn-outline-dark btn-hover-blue text-blue">
+                                            Limpar
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+
+                        <!-- TABELA -->
+                        <div id="tarefas-tab" class="tabulator-custom very compact striped"></div>
+
+                    </div>
+        
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="c-footer animated-footer">
+        <div class="footer-left">
+            <span>&copy; <?= date('Y') ?> ToDoList 📝</span>
+            <span class="divider">|</span>
+            <span>Desenvolvido com <i class="fas fa-heart text-danger"></i> por <strong>Arligreicy</strong></span>
+        </div>
+    
+        <div class="footer-right">
+            <a href="https://github.com/Arligreicy" title="GitHub" target="_blank">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/arligreicy-castro/" title="LinkedIn" target="_blank">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:arligreicy.1@gmail.com" title="E-mail">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- MODAL DE TAREFA -->
+    <div class="modal fade" id="modalTarefa" tabindex="-1" aria-labelledby="modalTarefa" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content"> 
+                <form id="formTarefa" method="post" action="javascript:void(0);">
+                    <div class="modal-header bg-black text-white">
+                        <h5 class="modal-title" id="modalTarefa">Cadastrar Tarefa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="idtarefa" id="IDTAREFA">
+
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" name="titulo" id="titulo" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea name="descricao" id="descricao" class="form-control"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prioridade" class="form-label">Prioridade</label>
+                            <select name="prioridade" id="prioridade" class="form-select">
+                                <option value="baixa">Baixa</option>
+                                <option value="media">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+
+                          <div class="mb-3">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <select name="categoria" id="categoria" class="form-select">
+                                <option value="1">Trabalho</option>
+                                <option value="2">Casa</option>
+                                <option value="3">Estudos</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="justificativa" class="form-label">Justificativa</label>
+                            <textarea name="justificativa" id="justificativa" class="form-control"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prazo" class="form-label">Prazo</label>
+                            <input type="date" name="prazo" id="prazo" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR TAREFA -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditar" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <form id="formEditar" method="post" action="javascript:void(0);">
+                <div class="modal-header bg-black text-white">
+                <h5 class="modal-title" id="modalEditar">Editar Tarefa</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                <input type="hidden" id="editaridtarefa" name="idtarefa">
+                <div class="mb-3">
+                    <label for="editar_titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="editartitulo" name="editartitulo" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="editardescricao" name="editardescricao" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_justificativa" class="form-label">Justificativa</label>
+                    <textarea class="form-control" id="editarjustificativa" name="editarjustificativa" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_categoria" class="form-label">Categoria</label>
+                    <select class="form-control" id="editarcategoria" name="editarcategoria" required>
+                    <option value="1">Trabalho</option>
+                    <option value="2">Casa</option>
+                    <option value="3">Estudos</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_status" class="form-label">Status</label>
+                    <select class="form-control" id="editarstatus" name="editarstatus">
+                    <option value="pendente">Pendente</option>
+                    <option value="progresso">Em Progresso</option>
+                    <option value="concluida">Concluída</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editarprazo" class="form-label">Prazo</label>
+                    <input type="date" name="editarprazo" id="editarprazo" class="form-control">
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR PERFIL -->
+    <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="tituloEditarPerfil" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <form id="formEditarPerfil" method="post" action="javascript:void(0);">
+                <div class="modal-header bg-black text-white">
+                    <h5 class="modal-title" id="tituloEditarPerfil">Editar Perfil</h5>
+                        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editaridusuario" name="idusuario">
+                <div class="mb-3">
+                    <label for="editar_nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="editarnome" name="editarnome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_status" class="form-label">Status</label>
+                        <select class="form-control" id="editarstatususuario" name="editarstatususuario" required>
+                            <option value="S">Ativo</option>
+                            <option value="N">Inativo</option>
+                        </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editar_senha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="editarsenha" name="editarsenha" required>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+           
+        </div>
+    </div>
+
+    <!-- tabulator -->
+    <link href="<?php echo base_url(); ?>assets/tabulator/dist/css/tabulator_semanticui.min.css" rel="stylesheet">
+    <script type="text/javascript" src="<?php echo base_url(); ?>assets/tabulator/dist/js/tabulator.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/luxon@2.3.1/build/global/luxon.min.js"></script>
+    <!-- dependencia para manipular datas dentro do tabulator -->
+
+    
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+        // Move todos os modais para o final do body (fora da c-wrapper)
+            document.querySelectorAll('.modal').forEach(modal => {
+                document.body.appendChild(modal);
+            });
+        });
+
+        var tarefas = new Tabulator("#tarefas-tab", {            
+            layout: "fitColumns",
+            height: "calc(100vh - 290px)",
+            ajaxURL: "<?php echo base_url('Tarefa/listar_ajax'); ?>",
+            ajaxConfig: "POST",
+            progressiveLoad: "scroll",
+            progressiveLoadScrollMargin: 200,
+            paginationSize: 20,
+            placeholder: "Nenhum registro encontrado",
+            sortMode: "remote",
+            filterMode: "remote",
+            initialFilter: [{
+                field: "CONVERT(TAREFA.DATACRIACAO,DATE)",
+                type: ">=",
+                value: "<?php echo date('Y-m-d', strtotime('-30 days')); ?>"
+                },
+                {
+                    field: "CONVERT(TAREFA.DATACRIACAO,DATE)",
+                    type: "<=",
+                    value: "<?php echo date('Y-m-d'); ?>"
+                },
+                 {
+                    field: "TAREFA.IDUSUARIO",
+                    type: "=",
+                    value: "<?php echo $_SESSION['idusuario']; ?>"
+                },
+            ],
+            dataLoaderLoading: '<i class="fa fa-circle-o-notch fa-spin text-secondary fa-3x fa-fw"></i>',
+            columnDefaults: {
+                vertAlign: "middle",
+            },
+            columns: [
+                // Coluna de ações (botões Editar e Excluir)
+                {
+                    title: "Ações",
+                    field: "acoes",
+                    width: '110',
+                    headerSort: false,
+                    frozen: true,
+                    hozAlign: "center",
+                    headerHozAlign: "center",
+                    formatter: function(cell, formatterParams) {
+                        var id = cell.getRow().getData().IDTAREFA;
+                        return `
+                                <button type="button" class="btn btn-primary btn-sm btnEditar btn-space" data-id="${id}"><i class="fa fa-pencil"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm btnExcluir" data-id="${id}"><i class="fa fa-times"></i></button>
+                            `;
+                    },
+                },
+                {
+                    title: "Nome",
+                    field: "NOMEUSUARIO",
+                    width: 120
+                },
+                {
+                    title: "Tipo",
+                    field: "NOMECATEGORIA",
+                    width: 100
+                },
+                {
+                    title: "Título",
+                    field: "TITULO",
+                    width: 200,
+                },
+                {
+                    title: "Descrição",
+                    field: "DESCRICAO",
+                    width: 300,
+                },
+                {
+                    title: "Prioridade",
+                    field: "PRIORIDADE",
+                    width: 100,
+                    hozAlign: "center",
+                    formatter: function(cell, formatterParams) {
+                        const value = cell.getValue();
+                        if (value === "baixa") {
+                            return '<span class="badge bg-success">Baixa</span>';
+                        } else if (value === "alta") {
+                            return '<span class="badge bg-danger">Alta</span>';
+                        } else {
+                            return '<span class="badge bg-warning">Média</span>';
+                        }
+                    }
+                },
+                {
+                    title: "Justificativa",
+                    field: "JUSTIFICATIVA",
+                    width: 150,
+                },
+                {
+                    title: "Data de Criação",
+                    field: "DATACRIACAO",
+                    width: 150,
+                    hozAlign: "center",
+                    headerHozAlign: "center",
+
+                    formatter: function(cell) {
+                        let data = cell.getValue();
+                        if (!data) return "";
+                        let d = new Date(data);
+                        if (isNaN(d.getTime())) return data;
+
+                        let dia = String(d.getDate()).padStart(2, '0');
+                        let mes = String(d.getMonth() + 1).padStart(2, '0');
+                        let ano = d.getFullYear();
+                        let hora = String(d.getHours()).padStart(2, '0');
+                        let minuto = String(d.getMinutes()).padStart(2, '0');
+
+                        return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+                    }
+                },
+                {
+                    title: "Prazo de Conclusão",
+                    field: "PRAZO",
+                    width: 150,
+                    hozAlign: "center",
+                    headerHozAlign: "center",
+
+                    formatter: function(cell) {
+                        const data = cell.getValue();
+                        if (!data) return "";
+
+                        // Pega só a parte da data (ignora hora se vier junto)
+                        const partes = data.split(" ")[0].split("-");
+                        if (partes.length !== 3) return data; 
+
+                        const [ano, mes, dia] = partes;
+                        return `${dia.padStart(2,'0')}/${mes.padStart(2,'0')}/${ano}`;
+                    }
+                },
+                {
+                    title: "Situação",
+                    field: "STATUS",
+                    width: 200,
+                    hozAlign: "center",
+                    headerHozAlign: "center",
+                    formatter: function(cell) {
+                        const status = cell.getValue();
+                        var id = cell.getRow().getData().IDTAREFA;
+                        if (status === 'pendente') {
+                            return `<button class="btn btn-sm btn-success btnAtualizarStatus" data-id="${id}">Pendente</button>`;
+                        } else if (status === 'concluida') {
+                            return `<button class="btn btn-sm btn-primary btnAtualizarStatus" data-id="${id}">Concluído</button>`;
+                        } else {
+                            return '<button class="btn btn-sm btn-danger">Cancelada</button>';
+                        }
+                    }
+                },
+            ],
+        });
+
+        $(function() {
+
+            $('#formFiltro').on('submit', function() {
+                var datainicio = $('#formFiltro input[name="datainicio"]').val();
+                var datafinal = $('#formFiltro input[name="datafinal"]').val();
+                var situacao = $('#formFiltro select[name="situacao"]').val();
+                var descricao = $('#formFiltro input[name="filtrodescricao"]').val();
+                var filtros = [];
+
+                // Se tiver datas, usa as datas do form
+                if (datainicio) {
+                    filtros.push({
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: ">=",
+                        value: datainicio
+                    });
+                }
+
+                if (datafinal) {
+                    filtros.push({
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: "<=",
+                        value: datafinal
+                    });
+                }
+
+                // Só aplica o filtro de status se foi preenchido
+                if (situacao !== "") {
+                    filtros.push({
+                        field: 'TAREFA.STATUS',
+                        type: "=",
+                        value: situacao
+                    });
+                }
+
+                if (descricao != '') {
+                    filtros.push({
+                        field: 'TAREFA.TITULO',
+                        type: "like",
+                        value: `%${descricao}%`
+                    });
+                }
+
+                tarefas.setFilter(filtros);
+            });
+
+            $('#btnLimpar').on('click', function() {
+                // Limpa os campos do formulário
+                $('#formFiltro')[0].reset();
+
+                // Calcula datas padrão: hoje e 30 dias atrás
+                var hoje = new Date();
+                var dataFim = hoje.toISOString().split('T')[0];
+
+                var dataInicioObj = new Date();
+                dataInicioObj.setDate(dataInicioObj.getDate() - 30);
+                var dataInicio = dataInicioObj.toISOString().split('T')[0];
+
+                // Aplica os filtros de 30 dias
+                tarefas.setFilter([{
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: ">=",
+                        value: dataInicio
+                    },
+                    {
+                        field: 'CONVERT(TAREFA.DATACRIACAO,DATE)',
+                        type: "<=",
+                        value: dataFim
+                    }
+                ]);
+            });
+
+            $(document).on('click', '.btnAtualizarStatus', function() {
+
+                var id = $(this).attr('data-id');
+
+                Swal.fire({
+                    title: "",
+                    text: "Deseja alterar o status desta cotação?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Sim, alterar o status",
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        atualizar_status(id);
+                    }
+                });
+
+            });
+
+            $(document).on('click', '.btnEditar', function () {
+            
+                var id = $(this).data('id');
+
+                    $.ajax({
+                        url: '<?= base_url("Tarefa/carregartarefa/") ?>' + id,
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            if (data) {
+                                $('#editaridtarefa').val(data.IDTAREFA); 
+                                $('#editartitulo').val(data.TITULO);
+                                $('#editardescricao').val(data.DESCRICAO);
+                                $('#editarjustificativa').val(data.JUSTIFICATIVA);
+                                $('#editarcategoria').val(data.IDCATEGORIA);
+                                $('#editarstatus').val(data.STATUS); 
+                                $('#editarprazo').val(data.PRAZO);
+                                $('#modalEditar').modal('show');
+
+                            } else {
+                                Swal.fire('Erro', 'Tarefa não encontrada!', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Erro', 'Erro ao buscar os dados da tarefa!', 'error');
+                        }
+                    });
+                
+            });
+
+            $(document).on('click', '.btnnovatarefa', function() {
+                $('#modalTarefa').modal('show');
+                $('#formTarefa')[0].reset(); 
+            });
+
+            $('#formEditar').on('submit', function() {
+
+                var id = $('#editaridtarefa').val();
+                var titulo = $('#editartitulo').val();
+                var descricao = $('#editardescricao').val();
+                var justificativa = $('#editarjustificativa').val();
+                var categoria = $('#editarcategoria').val();
+                var status = $('#editarstatus').val();
+                var prazo = $('#editarprazo').val();
+
+                $.ajax({
+                    url: '<?= base_url("Tarefa/atualizar/") ?>' + id,
+                    type: 'POST',
+                    data: {
+                        titulo: titulo,
+                        descricao: descricao,
+                        justificativa: justificativa,
+                        idcategoria: categoria,
+                        status: status,
+                        prazo: prazo,
+                    },
+                    success: function(response) {
+
+                        if (response.sucesso) {
+
+                            Swal.fire('Sucesso', 'Tarefa atualizada com sucesso!', 'success');
+                            tarefas.setData(); 
+
+                            $('#modalEditar').modal('hide');
+
+                        } else {
+                            Swal.fire('Erro', response.mensagem || 'Erro ao atualizar tarefa.', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erro', 'Erro ao comunicar com o servidor.', 'error');
+                    }
+                });
+
+            });
+
+            $('#formTarefa').on('submit', function(data) {
+
+                data.preventDefault();
+
+                var dados = {                                        
+                    titulo: $('#titulo').val(),
+                    descricao: $('#descricao').val(),
+                    prioridade: $('#prioridade').val(),
+                    justificativa: $('#justificativa').val(),
+                    categoria: $('#categoria').val(),
+                    prazo: $('#prazo').val()
+                };
+
+                $.ajax({
+                    url: '<?= base_url("Tarefa/inserir") ?>',
+                    type: 'POST',
+                    data: dados,
+                    dataType: 'json',
+
+                    success: function(response) {
+
+                        if (response.sucesso) {
+
+                            Swal.fire('Sucesso', 'Tarefa cadastrada com sucesso!', 'success');
+
+                            $('#modalTarefa').modal('hide');
+                            $('#formTarefa')[0].reset();
+
+                            tarefas.setData();
+                        } else {
+                            Swal.fire('Erro', response.mensagem || 'Erro ao cadastrar tarefa.', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erro', 'Erro ao comunicar com o servidor.', 'error');
+                    }
+                });
+            });
+
+            $(document).on('click', '.btnExcluir', function() {
+
+                var idtarefa = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: "Você não poderá reverter isso!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sim, excluir!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post('<?= base_url("Tarefa/excluir/"); ?>' + idtarefa, {
+                            idtarefa: idtarefa
+                        }, function(data) {
+                            if (data.sucesso) {
+                                Swal.fire(
+                                    'Excluído!',
+                                    'A tarefa foi excluída com sucesso.',
+                                    'success'
+                                );
+                                tarefas.setData();
+                            } else {
+                                Swal.fire(
+                                    'Erro!',
+                                    data.mensagem || 'Erro ao excluir a tarefa.',
+                                    'error'
+                                );
+                            }
+                        }).fail(function() {
+                            Swal.fire(
+                                'Erro!',
+                                'Erro na comunicação com o servidor.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+
+            $('#formEditarPerfil').on('submit', function(e){
+
+                e.preventDefault();
+
+                $.post('<?php echo base_url("Usuario/atualizar_perfil"); ?>', $(this).serialize() , function(data){
+
+                            if(data.status == "ok"){
+
+                                $('#modalEditarPerfil').modal('hide');
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Perfil atualizado!',
+                                text: 'O perfil foi atualizado com sucesso.',
+                                timer: 2000,
+                                showConfirmButton: false
+
+                            });                                                               
+                            
+                            } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: data.mensagem || 'Erro ao editar perfil.'
+                            });
+                        }
+                    }).fail(function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Falha na conexão!',
+                            text: 'Erro na comunicação com o servidor.'
+                        });
+                });
+            });
+
+        });
+
+        function atualizar_status(idtarefa){ 
+
+            $.post('<?= base_url("Tarefa/alterar_status"); ?>', {
+                idtarefa: idtarefa
+            }, function(data) {
+
+                if (data.sucesso) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status alterado!',
+                        text: 'O status da tarefa foi atualizado com sucesso.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    tarefas.setData(); 
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: data.mensagem || 'Erro ao atualizar status.'
+                    });
+                }
+            }).fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Falha na conexão!',
+                    text: 'Erro na comunicação com o servidor.'
+                });
+            });
+        }
+
+        function abrir_modal_perfil(){
+            
+            $.get('<?php echo base_url("Usuario/carregar_perfil"); ?>', function(data){
+
+                if (data.status === 'ok') {
+
+                    console.log(data);
+                    
+                    $('#formEditarPerfil input[name="editarnome"]').val(data.dados.NOME);
+                    $('#formEditarPerfil select[name="editarstatususuario"]').val(data.dados.STATUS);
+                    $('#formEditarPerfil input[name="editarsenha"]').val(''); 
+                    $('#formEditarPerfil input[name="editarconfirmarsenha"]').val(''); 
+                                        
+                    $('#modalEditarPerfil').modal('show');
+                }
+        
+            });
+        }//fim da função abrir_modal_perfil
+
+       
+    </script>
+
+
+</body>
+</html>
+
+

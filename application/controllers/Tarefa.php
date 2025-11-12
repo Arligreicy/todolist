@@ -14,9 +14,13 @@ class Tarefa extends CI_Controller {
 
         }
 
+	function index(){
+		$this->load->view("DashboardView.php");
+	}
+
     function listar(){
 
-		$this->load->view("DashboardView.php");
+		$this->load->view("ListarTarefaView.php");
         
 	} // Fim da função listar
 
@@ -45,6 +49,79 @@ class Tarefa extends CI_Controller {
 		// Esse echo json_encode nunca será executado com o exit acima
 		echo json_encode(["last_page"=> $lastPage, "data" => $resultado, "total" => $total]);
 	}
+
+	//endpoint para buscar eventos para o FullCalendar
+	function listar_eventos() {
+
+		header('Content-Type: application/json');
+
+		$this->load->model("TAREFAModel");
+		$tarefas = $this->TAREFAModel->listar(); 
+		
+		$eventos = [];
+
+		foreach ($tarefas as $t) {
+
+			$cor = '#007bff'; 
+
+			 // cores conforme o status
+            switch ($t->STATUS) {
+                case 'pendente':   $cor = '#ffc107'; break; // amarelo
+                case 'concluida':  $cor = '#28a745'; break; // verde
+                case 'atrasada':   $cor = '#dc3545'; break; // vermelho
+            }
+
+			 // Datas: de criação até prazo (se tiver)
+			$inicio = $t->DATACRIACAO ?? $t->PRAZO;
+			$fim = $t->PRAZO ? date('Y-m-d', strtotime($t->PRAZO . ' +1 day')) : $inicio;
+
+			$eventos[] = [
+
+				'id' => $t->IDTAREFA,
+                'title' => $t->TITULO,
+                'start' => $inicio,
+				'end' => $fim,
+                'description' => $t->DESCRICAO,
+                'backgroundColor' => $cor,
+                'borderColor' => $cor,
+                'status' => $t->STATUS,
+                'categoria' => $t->NOMECATEGORIA ?? '',
+                'usuario' => $t->NOMEUSUARIO ?? '',
+			];
+		}
+
+		echo json_encode($eventos);
+	}
+
+	function atualizar_prazo() {
+
+		header('Content-Type: application/json');
+
+		$id = $this->input->post('id');
+		$novoPrazo = $this->input->post('novo_prazo');
+
+			if (!$id || !$novoPrazo) {
+				echo json_encode(['sucesso' => false, 'mensagem' => 'Dados inválidos.']);
+				return;
+			}
+
+		$t = $this->TAREFAModel;
+		$t->IDTAREFA = $id;
+
+			if (!$t->carregar()) {
+				echo json_encode(['sucesso' => false, 'mensagem' => 'Tarefa não encontrada.']);
+				return;
+			}
+
+		$t->PRAZO = $novoPrazo;
+
+			if ($t->atualizar()) {
+				echo json_encode(['sucesso' => true]);
+			} else {
+				echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar prazo.']);
+			}
+	}
+	
 
 	function alterar_status(){
 		

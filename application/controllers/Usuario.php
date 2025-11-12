@@ -85,6 +85,7 @@ class Usuario extends CI_Controller {
             $u = $this->USUARIOModel;
             $u->NOME = $nome;
             $u->SENHA = password_hash($senha, PASSWORD_DEFAULT);
+            $u->STATUS = 'S';
             $u->DATACAD = date('Y-m-d H:i:s');
 
             if ($u->inserir()) {
@@ -94,7 +95,7 @@ class Usuario extends CI_Controller {
             }
         }
 
-        function carregarperfil() {
+        function carregar_perfil() {
 
             header('Content-Type: application/json');
 
@@ -108,16 +109,43 @@ class Usuario extends CI_Controller {
 
             if ($u->carregar()) {
 
-                $dados = [
-                    'idusuario' => $u->IDUSUARIO,
-                    'nome' => $u->NOME
-                   
-                ];
-                echo json_encode(['status' => 'ok', 'dados' => $dados]);
+                echo json_encode(['status' => 'ok', 'dados' => $u]);
             } else {
                 echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao editar usuário.']);
             }
-        } // Fim da função editarperfil
+        } // Fim da função carregarperfil
+
+        function atualizar_perfil() {
+
+            header('Content-Type: application/json');
+
+            if (!isset($_SESSION['login'])) {
+                redirect(base_url("Usuario/login"));
+            }
+
+            $this->load->model('USUARIOModel');
+            $u = $this->USUARIOModel;
+
+            $u->IDUSUARIO = $_SESSION['idusuario'];
+            $iduser = $u->IDUSUARIO;
+            $u->NOME = $this->input->post('editarnome');
+            $senha = $this->input->post('editarsenha');
+            $u->DATACAD = date('Y-m-d H:i:s');
+
+            if (!empty($senha)) {
+                $u->SENHA = password_hash($senha, PASSWORD_DEFAULT);
+            } else {
+                $u->carregar();
+            }
+
+            $u->STATUS = $this->input->post('editarstatususuario');
+
+            if ($u->atualizar($iduser)) {
+                echo json_encode(['status' => 'ok']);
+            } else {
+                echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao atualizar perfil.']);
+            }
+        } // Fim da função atualizarperfil
 
     }
 

@@ -9,6 +9,7 @@ class USUARIOModel extends CI_Model {
     public $IDUSUARIO;
     public $NOME;
     public $SENHA;
+    public $STATUS;
     public $DATACAD;
 
     /*  -------------------  Métodos de Banco  -------------------  */
@@ -93,6 +94,7 @@ class USUARIOModel extends CI_Model {
         // Executa a query
         $query = $this->db->get();
         return $query->result();
+
     } // Fim da função listar_ajax
 
     function carregar() {
@@ -111,27 +113,27 @@ class USUARIOModel extends CI_Model {
 
     } // Fim da função carregar
 
-   function autenticar($nome, $senha) {
-    $sql = "SELECT * FROM USUARIO WHERE NOME = ?";
-    $query = $this->db->query($sql, array($nome));
-    $resultado = $query->result();
+    function autenticar($nome, $senha) {
+        $sql = "SELECT * FROM USUARIO WHERE NOME = ?";
+        $query = $this->db->query($sql, array($nome));
+        $resultado = $query->result();
 
-    
-    if (count($resultado) > 0) {
-        $usuario = $resultado[0];
-       
-        if (password_verify($senha, $usuario->SENHA)) {
-            foreach ($query->list_fields() as $field) {
-                $this->$field = $usuario->$field;
+        
+            if (count($resultado) > 0) {
+                $usuario = $resultado[0];
+            
+                if (password_verify($senha, $usuario->SENHA)) {
+                    foreach ($query->list_fields() as $field) {
+                        $this->$field = $usuario->$field;
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
             }
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
     }
-}
 
     function excluir() {
 
@@ -140,6 +142,31 @@ class USUARIOModel extends CI_Model {
         return $query;
 
     } // Fim da excluir
+
+    function atualizar(){
+	
+		$sql = "UPDATE 
+					USUARIO
+					
+				SET
+					NOME = ?,
+					SENHA = ?,
+					STATUS = ?,
+					DATACAD = ?
+				
+					
+				WHERE
+					IDUSUARIO = ?";			
+		
+		$query = $this->db->query($sql, array($this->NOME,
+											  $this->SENHA,
+											  $this->STATUS,
+											  $this->DATACAD,
+											  $this->IDUSUARIO));
+		
+		return $query;
+	
+	}//Fim da função atualizar
 
 }
 ?>
